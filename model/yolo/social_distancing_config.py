@@ -5,4 +5,4 @@ NMS_THRESH = 0.3
 
 USE_GPU = False
 
-MIN_DISTANCE = 50
+MIN_DISTANCE = 50 # pixels
