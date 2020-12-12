@@ -69,26 +69,30 @@ class GraphDetails(Resource):
             output[i] = x 
             date = output[i]['datetime']
             day, month, year = date.day, date.month, date.year
+            output[i]['datetime'] = output[i]['datetime'].strftime("%d %B, %Y")
             date = datetime(year, month, day)
             dates.add(date)
             output[i].pop('_id')
             i += 1
-        print(dates)
+        print(output)
         data = dict()
         for date in dates:
-            data[date] = []
+            data[date.strftime("%d %B, %Y")] = []
         for key in output:
             thisDate = output[key]['datetime']
-            thisDay, thisMonth, thisYear = thisDate.day, thisDate.month, thisDate.year
-            thisDate = datetime(thisYear, thisMonth, thisDay)
+            # thisDay, thisMonth, thisYear = thisDate.day, thisDate.month, thisDate.year
+            # thisDate = datetime(thisYear, thisMonth, thisDay)
 
             for date in dates:
-                if date == thisDate:
-                    data[date].append(key)
+                if date.strftime("%d %B, %Y") == thisDate:
+                    data[date.strftime("%d %B, %Y")].append(key)
                     break
 
         print(data)
-        return jsonify(output) 
+        print(output)
+        output['order'] = data
+        print(output)
+        return output
 
 class LocationDetails(Resource):
 
@@ -112,7 +116,7 @@ class LocationDetails(Resource):
                 location['longitude'] = x['longitude']
                 location['address'] = geolocator.reverse(st).address
                 location['date'] = date.strftime("%d %B, %Y")
-
+                location['type'] = x['type']
                 locations[i] = location
                 i += 1
 
