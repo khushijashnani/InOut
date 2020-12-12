@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:app/graphs.dart';
 import 'package:app/locations.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
@@ -23,6 +24,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'InOut Hack',
       theme: ThemeData(
         primarySwatch: Colors.blue,
@@ -46,7 +48,7 @@ class _HomeState extends State<Home> {
   bool loading = false;
   String text;
 
-  List<String> choices = ['Upload an image', 'View locations'];
+  List<String> choices = ['Upload an image','View statistics', 'View locations'];
   void choiceAction(String choice) async {
     if (choice == 'Upload an image') {
       File selected = await ImagePicker.pickImage(source: ImageSource.gallery);
@@ -114,7 +116,7 @@ class _HomeState extends State<Home> {
           });
 
           var response = await http.post(
-              'https://aa4b28d8ed6d.ngrok.io/validate',
+              'https://c680f43c9351.ngrok.io/validate',
               headers: headers,
               body: json.encode(data));
           var jsonData = json.decode(response.body);
@@ -125,7 +127,7 @@ class _HomeState extends State<Home> {
             text = message + "\nWaiting to detect mask on faces";
           });
           
-          var response2 = await http.post('https://aa4b28d8ed6d.ngrok.io/check_face_mask',headers: headers,
+          var response2 = await http.post('https://c680f43c9351.ngrok.io/check_face_mask',headers: headers,
               body: json.encode(data));
           var jsonData2 = json.decode(response2.body);
           String message2 = jsonData2["msg"];
@@ -145,11 +147,12 @@ class _HomeState extends State<Home> {
 
       }
     } else if (choice == 'View locations') {
-
-     
-
       Navigator.of(context)
           .push(MaterialPageRoute(builder: (context) => Locations()));
+    }
+    else if(choice == 'View statistics'){
+      Navigator.of(context)
+          .push(MaterialPageRoute(builder: (context) => GraphDetails()));
     }
   }
 

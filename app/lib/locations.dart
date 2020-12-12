@@ -20,7 +20,7 @@ class _LocationsState extends State<Locations> with SingleTickerProviderStateMix
   double height, width;
 
   getlocations() async {
-    var response = await http.get('https://aa4b28d8ed6d.ngrok.io/location_details');
+    var response = await http.get('https://c680f43c9351.ngrok.io/location_details');
     var jsonData = json.decode(response.body);
     Map<dynamic, dynamic> data = jsonData;
     print(data.keys);
