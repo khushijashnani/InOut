@@ -61,12 +61,12 @@ class GraphDetails(Resource):
     def get(self):
 
         data = LocationTable.find({})
-        
-        output = {} 
+
+        output = {}
         dates = set()
         i = 0
-        for x in data: 
-            output[i] = x 
+        for x in data:
+            output[i] = x
             date = output[i]['datetime']
             day, month, year = date.day, date.month, date.year
             output[i]['datetime'] = output[i]['datetime'].strftime("%d %B, %Y")
@@ -75,22 +75,36 @@ class GraphDetails(Resource):
             output[i].pop('_id')
             i += 1
         print(output)
+
         data = dict()
+        data_mask = dict()
+        data_social_distance = dict()
+
         for date in dates:
-            data[date.strftime("%d %B, %Y")] = []
+            data[date.strftime("%d %B")] = 0
+            data_mask[date.strftime("%d %B")] = 0
+            data_social_distance[date.strftime("%d %B")] = 0
+
         for key in output:
             thisDate = output[key]['datetime']
-            # thisDay, thisMonth, thisYear = thisDate.day, thisDate.month, thisDate.year
-            # thisDate = datetime(thisYear, thisMonth, thisDay)
-
             for date in dates:
                 if date.strftime("%d %B, %Y") == thisDate:
-                    data[date.strftime("%d %B, %Y")].append(key)
+                    data[date.strftime("%d %B")
+                         ] = data[date.strftime("%d %B")] + 1
+                    if output[key]['type'] == "Social Distancing Violation":
+                        data_social_distance[date.strftime(
+                            "%d %B")] = data_social_distance[date.strftime("%d %B")] + 1
+                    elif output[key]['type'] == "Mask Defaulter":
+                        data_mask[date.strftime(
+                            "%d %B")] = data_mask[date.strftime("%d %B")] + 1
                     break
 
-        print(data)
-        print(output)
-        output['order'] = data
+        output['graph_1_key'] = list(data.keys())
+        output['graph_1_value'] = list(data.values())
+        output['graph_2_key'] = list(data_mask.keys())
+        output['graph_2_value'] = list(data_mask.values())
+        output['graph_3_key'] = list(data_social_distance.keys())
+        output['graph_3_value'] = list(data_social_distance.values())
         print(output)
         return output
 
