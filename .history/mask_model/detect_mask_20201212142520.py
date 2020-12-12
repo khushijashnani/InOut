@@ -76,7 +76,7 @@ def detect_and_predict_mask(frame):
 
 	# return a 2-tuple of the face locations and their corresponding
 	# locations
-	return (locs, preds)
+	return (locs, preds, frame)
 
 
 # grab the frame from the threaded video stream and resize it

@@ -54,7 +54,7 @@ class Validate(Resource):
 
             query = LocationTable.insert_one(queryObject)
             print(query)
-        return {"msg": "Total people violating social distancing are : {}".format(v[0])}
+        return {"msg": "Total people violating the rules are : {}".format(v[0])}
         
 class GraphDetails(Resource):
     
@@ -88,6 +88,8 @@ class GraphDetails(Resource):
                     data[date.strftime("%d %B, %Y")].append(key)
                     break
 
+        print(data)
+        print(output)
         output['order'] = data
         print(output)
         return output
@@ -139,18 +141,18 @@ class MaskTest(Resource):
         print(length_,mask_count)
 
 
-        if ((length_ - mask_count) / length_) * 100 > 10:
+        # if ((length_ - mask_count) / length_) * 100 > 10:
     
-            queryObject = {
-                'latitude': data['latitude'],
-                'longitude': data['longitude'],
-                'datetime': datetime.now(),
-                'imageURL': data['url'],
-                'type': "Mask Defaulter"
-            }
+        #     queryObject = {
+        #         'latitude': data['latitude'],
+        #         'longitude': data['longitude'],
+        #         'datetime': datetime.now(),
+        #         'imageURL': data['url'],
+        #         'type': "No mask detected"
+        #     }
 
-            query = LocationTable.insert_one(queryObject)
-            print(query)
+        #     query = LocationTable.insert_one(queryObject)
+        #     print(query)
         return {"msg": "Total people not wearing the mask are : {}".format(length_ - mask_count)}
 
 api = Api(app)

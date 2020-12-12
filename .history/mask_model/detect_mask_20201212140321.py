@@ -14,13 +14,13 @@ ap.add_argument('-i', '--input', type=str, default='', help='path to input image
 args = vars(ap.parse_args())
 
 # load our serialized face detector model from disk
-# prototxtPath = r"C:\Users\priyavmehta\Desktop\Flask\InOut\mask_model\face_detector\deploy.prototxt"
-# weightsPath = r"C:\Users\priyavmehta\Desktop\Flask\InOut\mask_model\face_detector\res10_300x300_ssd_iter_140000.caffemodel"
-# faceNet = cv2.dnn.readNet(prototxtPath, weightsPath)
+prototxtPath = r"C:\Users\priyavmehta\Desktop\Flask\InOut\mask_model\face_detector\deploy.prototxt"
+weightsPath = r"C:\Users\priyavmehta\Desktop\Flask\InOut\mask_model\face_detector\res10_300x300_ssd_iter_140000.caffemodel"
+faceNet = cv2.dnn.readNet(prototxtPath, weightsPath)
 
 # load the face mask detector model from disk
 maskNet = load_model(r"C:\Users\priyavmehta\Desktop\Flask\InOut\mask_model\mask_detector.model")
-face_cascade = cv2.CascadeClassifier(r'C:\Users\priyavmehta\Desktop\Flask\InOut\mask_model\haarcascade_frontalface_default.xml')
+face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
 
 def detect_and_predict_mask(frame):
     	# grab the dimensions of the frame and then construct a blob
@@ -76,7 +76,7 @@ def detect_and_predict_mask(frame):
 
 	# return a 2-tuple of the face locations and their corresponding
 	# locations
-	return (locs, preds)
+	return (locs, preds, frame)
 
 
 # grab the frame from the threaded video stream and resize it

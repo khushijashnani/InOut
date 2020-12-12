@@ -91,19 +91,13 @@ class _LocationsState extends State<Locations> with SingleTickerProviderStateMix
         elevation: 0,
       ),
       body: loading ? 
-      Container(
-        height: height,
-        width: width,
-        child: Center(
-          child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            CircularProgressIndicator(),
-            SizedBox(height: 10,),
-            Text("Loading violation data")
-          ],
-        )),
-      ) : ListView(
+      Center(child: Column(
+        children: [
+          CircularProgressIndicator(),
+          SizedBox(height: 10,),
+          Text("Loading violation data")
+        ],
+      )) : ListView(
         children: [
           SizedBox(height: width * 0.05),
           Row(

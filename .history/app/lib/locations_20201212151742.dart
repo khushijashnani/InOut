@@ -96,7 +96,6 @@ class _LocationsState extends State<Locations> with SingleTickerProviderStateMix
         width: width,
         child: Center(
           child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             CircularProgressIndicator(),
             SizedBox(height: 10,),

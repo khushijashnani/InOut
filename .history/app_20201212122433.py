@@ -8,7 +8,7 @@ import cv2
 from datetime import datetime
 from geopy.geocoders import Nominatim
 from mask_model.detect_mask import detect_and_predict_mask
-# import imutils
+import imutils
   
 # Replace your URL here. Don't forget to replace the password. 
 connection_url = 'mongodb+srv://priyavmehta:priyavmehta@inout.a9ism.mongodb.net/inout?retryWrites=true&w=majority'
@@ -54,7 +54,7 @@ class Validate(Resource):
 
             query = LocationTable.insert_one(queryObject)
             print(query)
-        return {"msg": "Total people violating social distancing are : {}".format(v[0])}
+        return {"msg": "Total people violating the rules are : {}".format(v[0])}
         
 class GraphDetails(Resource):
     
@@ -88,6 +88,8 @@ class GraphDetails(Resource):
                     data[date.strftime("%d %B, %Y")].append(key)
                     break
 
+        print(data)
+        print(output)
         output['order'] = data
         print(output)
         return output
@@ -129,7 +131,7 @@ class MaskTest(Resource):
         url_response = urllib.request.urlopen(imageUrl)
         img_array = np.array(bytearray(url_response.read()), dtype=np.uint8)
         img = cv2.imdecode(img_array, -1)
-        
+        img = imutils.resize(img, width=400)
         (locs, preds) = detect_and_predict_mask(img)
         length_ = len(preds)
         mask_count = 0
@@ -146,7 +148,7 @@ class MaskTest(Resource):
                 'longitude': data['longitude'],
                 'datetime': datetime.now(),
                 'imageURL': data['url'],
-                'type': "Mask Defaulter"
+                'type': "No mask detected"
             }
 
             query = LocationTable.insert_one(queryObject)

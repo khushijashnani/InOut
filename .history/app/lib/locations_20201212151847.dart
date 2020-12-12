@@ -92,11 +92,10 @@ class _LocationsState extends State<Locations> with SingleTickerProviderStateMix
       ),
       body: loading ? 
       Container(
-        height: height,
+        height: 200,
         width: width,
         child: Center(
           child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             CircularProgressIndicator(),
             SizedBox(height: 10,),

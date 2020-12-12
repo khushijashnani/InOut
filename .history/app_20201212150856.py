@@ -54,7 +54,7 @@ class Validate(Resource):
 
             query = LocationTable.insert_one(queryObject)
             print(query)
-        return {"msg": "Total people violating social distancing are : {}".format(v[0])}
+        return {"msg": "Total people violating the rules are : {}".format(v[0])}
         
 class GraphDetails(Resource):
     
