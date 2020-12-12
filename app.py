@@ -8,7 +8,7 @@ import cv2
 from datetime import datetime
 from geopy.geocoders import Nominatim
 from mask_model.detect_mask import detect_and_predict_mask
-import imutils
+# import imutils
   
 # Replace your URL here. Don't forget to replace the password. 
 connection_url = 'mongodb+srv://priyavmehta:priyavmehta@inout.a9ism.mongodb.net/inout?retryWrites=true&w=majority'
@@ -54,10 +54,10 @@ class Validate(Resource):
 
             query = LocationTable.insert_one(queryObject)
             print(query)
-        return {"msg": "Total people violating the rules are : {}".format(v[0])}
+        return {"msg": "Total people violating social distancing are : {}".format(v[0])}
         
 class GraphDetails(Resource):
-
+    
     def get(self):
 
         data = LocationTable.find({})
@@ -74,37 +74,54 @@ class GraphDetails(Resource):
             dates.add(date)
             output[i].pop('_id')
             i += 1
-        print(output)
 
         data = dict()
         data_mask = dict()
         data_social_distance = dict()
 
         for date in dates:
-            data[date.strftime("%d %B")] = 0
-            data_mask[date.strftime("%d %B")] = 0
-            data_social_distance[date.strftime("%d %B")] = 0
+            data[date] = 0
+            data_mask[date] = 0
+            data_social_distance[date] = 0
 
         for key in output:
             thisDate = output[key]['datetime']
             for date in dates:
                 if date.strftime("%d %B, %Y") == thisDate:
-                    data[date.strftime("%d %B")
-                         ] = data[date.strftime("%d %B")] + 1
+                    data[date] = data[date] + 1
                     if output[key]['type'] == "Social Distancing Violation":
-                        data_social_distance[date.strftime(
-                            "%d %B")] = data_social_distance[date.strftime("%d %B")] + 1
+                        data_social_distance[date] = data_social_distance[date] + 1
                     elif output[key]['type'] == "Mask Defaulter":
-                        data_mask[date.strftime(
-                            "%d %B")] = data_mask[date.strftime("%d %B")] + 1
+                        data_mask[date] = data_mask[date] + 1
                     break
+        
+        graph_1 = sorted(data.items(), key=lambda x: x[0])
+        graph_1_keys = []
+        graph_1_values = []
+        for k, v in graph_1:
+            graph_1_keys.append(k.strftime("%d %B"))
+            graph_1_values.append(v)
 
-        output['graph_1_key'] = list(data.keys())
-        output['graph_1_value'] = list(data.values())
-        output['graph_2_key'] = list(data_mask.keys())
-        output['graph_2_value'] = list(data_mask.values())
-        output['graph_3_key'] = list(data_social_distance.keys())
-        output['graph_3_value'] = list(data_social_distance.values())
+        graph_2 = sorted(data_mask.items(), key=lambda x: x[0])
+        graph_2_keys = []
+        graph_2_values = []
+        for k, v in graph_2:
+            graph_2_keys.append(k.strftime("%d %B"))
+            graph_2_values.append(v)
+
+        graph_3 = sorted(data_social_distance.items(), key=lambda x: x[0])
+        graph_3_keys = []
+        graph_3_values = []
+        for k, v in graph_1:
+            graph_3_keys.append(k.strftime("%d %B"))
+            graph_3_values.append(v)
+
+        output['graph_1_key'] = graph_1_keys
+        output['graph_1_value'] = graph_1_values
+        output['graph_2_key'] = graph_2_keys
+        output['graph_2_value'] = graph_2_values
+        output['graph_3_key'] = graph_3_keys
+        output['graph_3_value'] = graph_3_values
         print(output)
         return output
 
@@ -145,7 +162,7 @@ class MaskTest(Resource):
         url_response = urllib.request.urlopen(imageUrl)
         img_array = np.array(bytearray(url_response.read()), dtype=np.uint8)
         img = cv2.imdecode(img_array, -1)
-        img = imutils.resize(img, width=400)
+        
         (locs, preds) = detect_and_predict_mask(img)
         length_ = len(preds)
         mask_count = 0
@@ -162,7 +179,7 @@ class MaskTest(Resource):
                 'longitude': data['longitude'],
                 'datetime': datetime.now(),
                 'imageURL': data['url'],
-                'type': "No mask detected"
+                'type': "Mask Defaulter"
             }
 
             query = LocationTable.insert_one(queryObject)
