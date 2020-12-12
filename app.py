@@ -7,7 +7,7 @@ import numpy as np
 import cv2
 from datetime import datetime
 from geopy.geocoders import Nominatim
-from mask_model.detect_mask import detect_and_predict_mask
+# from mask_model.detect_mask import detect_and_predict_mask
 import imutils
   
 # Replace your URL here. Don't forget to replace the password. 
@@ -118,45 +118,45 @@ class LocationDetails(Resource):
 
         return locations
 
-class MaskTest(Resource):
+# class MaskTest(Resource):
     
-    def post(self):
+#     def post(self):
 
-        data = request.get_json()
-        imageUrl = data['url']
-        url_response = urllib.request.urlopen(imageUrl)
-        img_array = np.array(bytearray(url_response.read()), dtype=np.uint8)
-        img = cv2.imdecode(img_array, -1)
-        img = imutils.resize(img, width=400)
-        (locs, preds) = detect_and_predict_mask(img)
-        length_ = len(preds)
-        mask_count = 0
-        for pred in preds:
-            if pred[0] > pred[1]:
-                mask_count += 1         
-        print(length_,mask_count)
+#         data = request.get_json()
+#         imageUrl = data['url']
+#         url_response = urllib.request.urlopen(imageUrl)
+#         img_array = np.array(bytearray(url_response.read()), dtype=np.uint8)
+#         img = cv2.imdecode(img_array, -1)
+#         img = imutils.resize(img, width=400)
+#         (locs, preds) = detect_and_predict_mask(img)
+#         length_ = len(preds)
+#         mask_count = 0
+#         for pred in preds:
+#             if pred[0] > pred[1]:
+#                 mask_count += 1         
+#         print(length_,mask_count)
 
 
-        if ((length_ - mask_count) / length_) * 100 > 10:
+#         if ((length_ - mask_count) / length_) * 100 > 10:
     
-            queryObject = {
-                'latitude': data['latitude'],
-                'longitude': data['longitude'],
-                'datetime': datetime.now(),
-                'imageURL': data['url'],
-                'type': "No mask detected"
-            }
+#             queryObject = {
+#                 'latitude': data['latitude'],
+#                 'longitude': data['longitude'],
+#                 'datetime': datetime.now(),
+#                 'imageURL': data['url'],
+#                 'type': "No mask detected"
+#             }
 
-            query = LocationTable.insert_one(queryObject)
-            print(query)
-        return {"msg": "Total people not wearing the mask are : {}".format(length_ - mask_count)}
+#             query = LocationTable.insert_one(queryObject)
+#             print(query)
+#         return {"msg": "Total people not wearing the mask are : {}".format(length_ - mask_count)}
 
 api = Api(app)
 api.add_resource(Add, '/insert-one/<string:name>/<int:id>')
 api.add_resource(Validate, '/validate')
 api.add_resource(GraphDetails, '/graph_details')
 api.add_resource(LocationDetails, '/location_details')
-api.add_resource(MaskTest, '/check_face_mask')
+# api.add_resource(MaskTest, '/check_face_mask')
 
 if __name__ == '__main__': 
     app.run(debug=True) 

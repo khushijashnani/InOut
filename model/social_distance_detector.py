@@ -15,13 +15,13 @@ ap.add_argument("-d", "--display", type=int, default=1, help="whether output be 
 args = vars(ap.parse_args())
 
 # load the COCO class labels our YOLO model was trained on
-labelsPath = 'model\\' + os.path.sep.join([config.MODEL_PATH, "coco.names"])
+labelsPath = 'model/' + os.path.sep.join([config.MODEL_PATH, "coco.names"])
 print(labelsPath)
 LABELS = open(labelsPath).read().strip().split("\n")
 
 # derive the paths to the YOLO weights and model configuration
-weightsPath = 'model\\' +os.path.sep.join([config.MODEL_PATH, "yolov3.weights"])
-configPath = 'model\\' +os.path.sep.join([config.MODEL_PATH, "yolov3.cfg"])
+weightsPath = 'model/' +os.path.sep.join([config.MODEL_PATH, "yolov3.weights"])
+configPath = 'model/' +os.path.sep.join([config.MODEL_PATH, "yolov3.cfg"])
 
 # load our YOLO object detector trained on COCO dataset (80 classes)
 net = cv2.dnn.readNetFromDarknet(configPath, weightsPath)
