@@ -58,7 +58,7 @@ class _LocationsState extends State<Locations> with SingleTickerProviderStateMix
       indicatorSize: TabBarIndicatorSize.tab,
       indicator: new BubbleTabIndicator(
         indicatorHeight: 43.0,
-        indicatorColor: Colors.blue[300],
+        indicatorColor: Colors.blue,
         indicatorRadius: 10,
         tabBarIndicatorSize: TabBarIndicatorSize.label,
       ),
@@ -95,19 +95,13 @@ class _LocationsState extends State<Locations> with SingleTickerProviderStateMix
       Container(
         height: height,
         width: width,
-        color: Colors.grey[850],
         child: Center(
           child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             CircularProgressIndicator(),
             SizedBox(height: 10,),
-            Text(
-              "Loading violation data",
-              style: TextStyle(
-                color: Colors.white
-              ),
-            )
+            Text("Loading violation data")
           ],
         )),
       ) : Material(

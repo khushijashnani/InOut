@@ -165,7 +165,6 @@ class _HomeState extends State<Home> {
       color: Colors.transparent,
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.grey[900],
           title: Text("InOut Hack"),
           actions: [
             PopupMenuButton(
@@ -196,10 +195,7 @@ class _HomeState extends State<Home> {
             children: [
               CircularProgressIndicator(),
               SizedBox(height: 10,),
-              Text(
-                text,
-                style: TextStyle(color: Colors.white)
-              )
+              Text(text)
             ],
           )
         ),

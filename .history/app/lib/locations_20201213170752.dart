@@ -58,7 +58,7 @@ class _LocationsState extends State<Locations> with SingleTickerProviderStateMix
       indicatorSize: TabBarIndicatorSize.tab,
       indicator: new BubbleTabIndicator(
         indicatorHeight: 43.0,
-        indicatorColor: Colors.blue[300],
+        indicatorColor: Colors.blue,
         indicatorRadius: 10,
         tabBarIndicatorSize: TabBarIndicatorSize.label,
       ),
@@ -95,19 +95,13 @@ class _LocationsState extends State<Locations> with SingleTickerProviderStateMix
       Container(
         height: height,
         width: width,
-        color: Colors.grey[850],
         child: Center(
           child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             CircularProgressIndicator(),
             SizedBox(height: 10,),
-            Text(
-              "Loading violation data",
-              style: TextStyle(
-                color: Colors.white
-              ),
-            )
+            Text("Loading violation data")
           ],
         )),
       ) : Material(
@@ -198,7 +192,7 @@ class _LocationsState extends State<Locations> with SingleTickerProviderStateMix
                       //"B/ 404, Suraj Plaza, opp. Dena bank, station road, Bhayandar(W), Thane, 401101",
                       style: TextStyle(
                         fontSize: 16,
-                        color: Colors.white
+                        color: Colors.black
                       ),
                     ),
                     SizedBox(height: 10,),
@@ -207,8 +201,7 @@ class _LocationsState extends State<Locations> with SingleTickerProviderStateMix
                       //"11th Dec, 2020",
                       style: TextStyle(
                         fontSize: 14,
-                        color: Colors.grey,
-                        fontWeight: FontWeight.bold
+                        color: Colors.grey
                       ),
                     )
                   ],
@@ -231,7 +224,7 @@ class _LocationsState extends State<Locations> with SingleTickerProviderStateMix
                 },
                 child: Icon(
                   Icons.arrow_forward_ios,
-                  color: Colors.blue[300],
+                  color: Colors.blue,
                 ),
               )
             ],
