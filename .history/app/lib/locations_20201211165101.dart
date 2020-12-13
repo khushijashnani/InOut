@@ -1,8 +1,11 @@
 import 'dart:convert';
+// import 'dart:js_util';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:bubble_tab_indicator/bubble_tab_indicator.dart';
 import 'package:maps_launcher/maps_launcher.dart';
+import 'package:map_launcher/map_launcher.dart';
+import 'package:geolocator/geolocator.dart';
 
 
 class Locations extends StatefulWidget {
@@ -11,16 +14,17 @@ class Locations extends StatefulWidget {
   @override
   _LocationsState createState() => _LocationsState();
 }
+
 class _LocationsState extends State<Locations> with SingleTickerProviderStateMixin {
 
+  double height, width;
   TabController tabController;
   bool loading = true;
   List<Map<dynamic, dynamic>> noMask = [];
   List<Map<dynamic, dynamic>> noSocialDistance = [];
-  double height, width;
 
   getlocations() async {
-    var response = await http.get('https://aa4b28d8ed6d.ngrok.io/location_details');
+    var response = await http.get('https://6d3d0baea9a9.ngrok.io/location_details');
     var jsonData = json.decode(response.body);
     Map<dynamic, dynamic> data = jsonData;
     print(data.keys);
@@ -28,11 +32,25 @@ class _LocationsState extends State<Locations> with SingleTickerProviderStateMix
     
     setState(() {
 
-      data.forEach((key, value) async { 
+      data.forEach((key, value) { 
         if (value['type'] == "Social Distancing Violation") {
           noSocialDistance.add(value);
         } else {
           noMask.add(value);
+        }
+
+        try {
+          List<Placemark> p = await geolocator.placemarkFromCoordinates(
+              _currentPosition.latitude, _currentPosition.longitude);
+
+          Placemark place = p[0];
+
+          setState(() {
+            _currentAddress =
+                "${place.locality}, ${place.postalCode}, ${place.country}";
+          });
+        } catch (e) {
+          print(e);
         }
       });
 
@@ -41,8 +59,10 @@ class _LocationsState extends State<Locations> with SingleTickerProviderStateMix
 
       loading = false;
     });
+    
   }
 
+  @override
   void initState() {
     // TODO: implement initState
     super.initState();
@@ -91,19 +111,7 @@ class _LocationsState extends State<Locations> with SingleTickerProviderStateMix
         elevation: 0,
       ),
       body: loading ? 
-      Container(
-        height: height,
-        width: width,
-        child: Center(
-          child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            CircularProgressIndicator(),
-            SizedBox(height: 10,),
-            Text("Loading violation data")
-          ],
-        )),
-      ) : ListView(
+      CircularProgressIndicator() : ListView(
         children: [
           SizedBox(height: width * 0.05),
           Row(

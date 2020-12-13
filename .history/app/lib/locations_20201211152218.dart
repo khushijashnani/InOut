@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:bubble_tab_indicator/bubble_tab_indicator.dart';
 import 'package:maps_launcher/maps_launcher.dart';
+import 'package:map_launcher/map_launcher.dart';
 
 
 class Locations extends StatefulWidget {
@@ -11,38 +12,19 @@ class Locations extends StatefulWidget {
   @override
   _LocationsState createState() => _LocationsState();
 }
-class _LocationsState extends State<Locations> with SingleTickerProviderStateMixin {
 
-  TabController tabController;
-  bool loading = true;
-  List<Map<dynamic, dynamic>> noMask = [];
-  List<Map<dynamic, dynamic>> noSocialDistance = [];
+class _LocationsState extends State<Locations> with SingleTickerProviderStateMixin {
+  List<List<double>> l;
   double height, width;
+  TabController tabController;
 
   getlocations() async {
-    var response = await http.get('https://aa4b28d8ed6d.ngrok.io/location_details');
+    var response = await http.get('https://6d3d0baea9a9.ngrok.io/location_details');
     var jsonData = json.decode(response.body);
-    Map<dynamic, dynamic> data = jsonData;
-    print(data.keys);
-    print(data.values);
-    
-    setState(() {
-
-      data.forEach((key, value) async { 
-        if (value['type'] == "Social Distancing Violation") {
-          noSocialDistance.add(value);
-        } else {
-          noMask.add(value);
-        }
-      });
-
-      print(noSocialDistance);
-      print(noMask);
-
-      loading = false;
-    });
+    print(jsonData);
   }
 
+  @override
   void initState() {
     // TODO: implement initState
     super.initState();
@@ -90,20 +72,7 @@ class _LocationsState extends State<Locations> with SingleTickerProviderStateMix
         title: Text("Crowded locations"),
         elevation: 0,
       ),
-      body: loading ? 
-      Container(
-        height: height,
-        width: width,
-        child: Center(
-          child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            CircularProgressIndicator(),
-            SizedBox(height: 10,),
-            Text("Loading violation data")
-          ],
-        )),
-      ) : ListView(
+      body: ListView(
         children: [
           SizedBox(height: width * 0.05),
           Row(
@@ -146,23 +115,23 @@ class _LocationsState extends State<Locations> with SingleTickerProviderStateMix
       // primary: false,
       // shrinkWrap: true,
       // physics: NeverScrollableScrollPhysics(),
-      itemCount: noMask.length,
+      itemCount: 6,
       itemBuilder: (context, index) {
-        return card(noMask[index]);
+        return card();
       }
     );
   }
 
   Widget social_distancing_tab() {
     return ListView.builder(
-      itemCount: noSocialDistance.length,
+      itemCount: 6,
       itemBuilder: (context, index) {
-        return card(noSocialDistance[index]);
+        return card();
       }
     );
   }
 
-  Widget card(Map map) {
+  Widget card() {
     return Padding(
       padding: const EdgeInsets.only(top: 8.0, bottom: 8, left: 5, right: 5),
       child: Material(
@@ -180,8 +149,7 @@ class _LocationsState extends State<Locations> with SingleTickerProviderStateMix
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      map['address'],
-                      //"B/ 404, Suraj Plaza, opp. Dena bank, station road, Bhayandar(W), Thane, 401101",
+                      "B/ 404, Suraj Plaza, opp. Dena bank, station road, Bhayandar(W), Thane, 401101",
                       style: TextStyle(
                         fontSize: 16,
                         color: Colors.black
@@ -189,8 +157,7 @@ class _LocationsState extends State<Locations> with SingleTickerProviderStateMix
                     ),
                     SizedBox(height: 10,),
                     Text(
-                      map['date'],
-                      //"11th Dec, 2020",
+                      "11th Dec, 2020",
                       style: TextStyle(
                         fontSize: 14,
                         color: Colors.grey
@@ -204,15 +171,14 @@ class _LocationsState extends State<Locations> with SingleTickerProviderStateMix
                 borderRadius: BorderRadius.all(Radius.circular(20)),
                 onTap: () async {
                   // MapsLauncher.launchCoordinates(
-                  //   map['latitude'], map['longitude'], 'Google Headquarters are here');
-                  // final availableMaps = await MapLauncher.installedMaps;
-                  // print(availableMaps); // [AvailableMap { mapName: Google Maps, mapType: google }, ...]
+                  //   37.4220041, -122.0862462, 'Google Headquarters are here');
+                  final availableMaps = await MapLauncher.installedMaps;
+                  print(availableMaps); // [AvailableMap { mapName: Google Maps, mapType: google }, ...]
 
-                  // await availableMaps.first.showMarker(
-                  //   coords: Coords(map['latitude'], map['longitude']),
-                  //   title: "Ocean Beach",
-                  // );
-                  await MapsLauncher.launchQuery(map['address']);
+                  await availableMaps.first.showMarker(
+                    coords: Coords(37.759392, -122.5107336),
+                    title: "Ocean Beach",
+                  );
                 },
                 child: Icon(
                   Icons.arrow_forward_ios,

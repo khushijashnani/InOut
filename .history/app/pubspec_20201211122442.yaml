@@ -33,8 +33,6 @@ dependencies:
   location: ^3.1.0
   firebase_analytics: ^6.3.0
   bubble_tab_indicator: ^0.1.4
-  maps_launcher: ^1.2.2+2
-  map_launcher: ^1.0.0
 
 dev_dependencies:
   flutter_test:

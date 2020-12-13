@@ -43,8 +43,6 @@ class _HomeState extends State<Home> {
   File image;
   double height, width;
   Position currentPosition;
-  bool loading = false;
-  String text;
 
   List<String> choices = ['Upload an image', 'View locations'];
   void choiceAction(String choice) async {
@@ -53,8 +51,6 @@ class _HomeState extends State<Home> {
       setState(() {
         image = selected;
         print(image);
-        loading = true;
-        text = "Uploading your image";
       });
       if (image != null) {
         String imageUrl;
@@ -68,10 +64,6 @@ class _HomeState extends State<Home> {
           // Position position = await Geolocator.getCurrentPosition(
           //     desiredAccuracy: LocationAccuracy.high);
           // print(position);
-
-          setState(() {
-            text = "Gathering your location";
-          });
           Location location = new Location();
 
           bool _serviceEnabled;
@@ -109,32 +101,21 @@ class _HomeState extends State<Home> {
             "charset": "utf-8"
           };
 
-          setState(() {
-            text = "Waiting to detect social distancing";
-          });
-
           var response = await http.post(
               'https://aa4b28d8ed6d.ngrok.io/validate',
               headers: headers,
               body: json.encode(data));
           var jsonData = json.decode(response.body);
           String message = jsonData["msg"];
-          print(message);
-
-          setState(() {
-            text = message + "\nWaiting to detect mask on faces";
-          });
+          Fluttertoast.showToast(
+            msg: message,
+            toastLength: Toast.LENGTH_LONG,
+            gravity: ToastGravity.BOTTOM);
           
           var response2 = await http.post('https://aa4b28d8ed6d.ngrok.io/check_face_mask',headers: headers,
               body: json.encode(data));
           var jsonData2 = json.decode(response2.body);
           String message2 = jsonData2["msg"];
-          print(message2);
-
-          setState(() {
-            loading = false;
-            text = "";
-          });
           Fluttertoast.showToast(
             timeInSecForIosWeb: 4,
             msg: message + " and " + message2,
@@ -181,20 +162,7 @@ class _HomeState extends State<Home> {
             ),
           ],
         ),
-        body: loading ? 
-        Container(
-        height: height,
-        width: width,
-        child: Center(
-          child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            CircularProgressIndicator(),
-            SizedBox(height: 10,),
-            Text(text)
-          ],
-        )),
-      ) : Container(
+        body: Container(
             width: width,
             height: height,
             child: Image.asset('assets/image.jpeg')),

@@ -133,7 +133,6 @@ class _HomeState extends State<Home> {
 
           setState(() {
             loading = false;
-            text = "";
           });
           Fluttertoast.showToast(
             timeInSecForIosWeb: 4,

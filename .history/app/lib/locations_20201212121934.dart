@@ -11,7 +11,7 @@ class Locations extends StatefulWidget {
   @override
   _LocationsState createState() => _LocationsState();
 }
-class _LocationsState extends State<Locations> with SingleTickerProviderStateMixin {
+class _LocationsState extends State<Locations> {
 
   TabController tabController;
   bool loading = true;
@@ -20,7 +20,7 @@ class _LocationsState extends State<Locations> with SingleTickerProviderStateMix
   double height, width;
 
   getlocations() async {
-    var response = await http.get('https://aa4b28d8ed6d.ngrok.io/location_details');
+    var response = await http.get('https://6d3d0baea9a9.ngrok.io/location_details');
     var jsonData = json.decode(response.body);
     Map<dynamic, dynamic> data = jsonData;
     print(data.keys);
@@ -91,19 +91,7 @@ class _LocationsState extends State<Locations> with SingleTickerProviderStateMix
         elevation: 0,
       ),
       body: loading ? 
-      Container(
-        height: height,
-        width: width,
-        child: Center(
-          child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            CircularProgressIndicator(),
-            SizedBox(height: 10,),
-            Text("Loading violation data")
-          ],
-        )),
-      ) : ListView(
+      CircularProgressIndicator() : ListView(
         children: [
           SizedBox(height: width * 0.05),
           Row(
