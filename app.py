@@ -61,12 +61,12 @@ class GraphDetails(Resource):
     def get(self):
 
         data = LocationTable.find({})
-        
-        output = {} 
+
+        output = {}
         dates = set()
         i = 0
-        for x in data: 
-            output[i] = x 
+        for x in data:
+            output[i] = x
             date = output[i]['datetime']
             day, month, year = date.day, date.month, date.year
             output[i]['datetime'] = output[i]['datetime'].strftime("%d %B, %Y")
@@ -75,20 +75,54 @@ class GraphDetails(Resource):
             output[i].pop('_id')
             i += 1
         print(output)
+
         data = dict()
+        data_mask = dict()
+        data_social_distance = dict()
+
         for date in dates:
-            data[date.strftime("%d %B, %Y")] = []
+            data[date] = 0
+            data_mask[date] = 0
+            data_social_distance[date] = 0
+
         for key in output:
             thisDate = output[key]['datetime']
-            # thisDay, thisMonth, thisYear = thisDate.day, thisDate.month, thisDate.year
-            # thisDate = datetime(thisYear, thisMonth, thisDay)
-
             for date in dates:
                 if date.strftime("%d %B, %Y") == thisDate:
-                    data[date.strftime("%d %B, %Y")].append(key)
+                    data[date] = data[date] + 1
+                    if output[key]['type'] == "Social Distancing Violation":
+                        data_social_distance[date] = data_social_distance[date] + 1
+                    elif output[key]['type'] == "Mask Defaulter":
+                        data_mask[date] = data_mask[date] + 1
                     break
 
-        output['order'] = data
+        graph_1 = sorted(data.items(), key=lambda x: x[0])
+        graph_1_keys = []
+        graph_1_values = []
+        for k, v in graph_1:
+            graph_1_keys.append(k.strftime("%d %B"))
+            graph_1_values.append(v)
+
+        graph_2 = sorted(data_mask.items(), key=lambda x: x[0])
+        graph_2_keys = []
+        graph_2_values = []
+        for k, v in graph_2:
+            graph_2_keys.append(k.strftime("%d %B"))
+            graph_2_values.append(v)
+
+        graph_3 = sorted(data_social_distance.items(), key=lambda x: x[0])
+        graph_3_keys = []
+        graph_3_values = []
+        for k, v in graph_1:
+            graph_3_keys.append(k.strftime("%d %B"))
+            graph_3_values.append(v)
+
+        output['graph_1_key'] = graph_1_keys
+        output['graph_1_value'] = graph_1_values
+        output['graph_2_key'] = graph_2_keys
+        output['graph_2_value'] = graph_2_values
+        output['graph_3_key'] = graph_3_keys
+        output['graph_3_value'] = graph_3_values
         print(output)
         return output
 
