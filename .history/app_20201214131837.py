@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask,request, jsonify
 import pymongo
 import urllib
 from flask_restful import Resource, Api
@@ -8,13 +8,12 @@ import cv2
 from datetime import datetime
 from geopy.geocoders import Nominatim
 from mask_model.detect_mask import detect_and_predict_mask
-import flask_excel as excel
 # import imutils
-
-# Replace your URL here. Don't forget to replace the password.
+  
+# Replace your URL here. Don't forget to replace the password. 
 connection_url = 'mongodb+srv://priyavmehta:priyavmehta@inout.a9ism.mongodb.net/inout?retryWrites=true&w=majority'
 
-app = Flask(__name__)
+app = Flask(__name__) 
 client = pymongo.MongoClient(connection_url)
 app.config['SECRET_KEY'] = 'assembler'
 
@@ -23,19 +22,15 @@ Database = client.get_database('inout')
 # Table
 LocationTable = Database.Locations
 
-excel.init_excel(app)
-
-
 class Add(Resource):
-
+    
     def get(self, name, id):
-        queryObject = {
-            'Name': name,
+        queryObject = { 
+            'Name': name, 
             'ID': id
-        }
-        query = LocationTable.insert_one(queryObject)
+        } 
+        query = LocationTable.insert_one(queryObject) 
         return "Query inserted...!!!"
-
 
 class Validate(Resource):
 
@@ -60,10 +55,9 @@ class Validate(Resource):
             query = LocationTable.insert_one(queryObject)
             print(query)
         return {"msg": "Total people violating social distancing are : {}".format(v[0])}
-
-
+        
 class GraphDetails(Resource):
-
+    
     def get(self):
 
         data = LocationTable.find({})
@@ -100,25 +94,26 @@ class GraphDetails(Resource):
                     elif output[key]['type'] == "Mask Defaulter":
                         data_mask[date] = data_mask[date] + 1
                     break
+        
         graph_1 = sorted(data.items(), key=lambda x: x[0])
         graph_1_keys = []
         graph_1_values = []
         for k, v in graph_1:
-            graph_1_keys.append(k.strftime("%d %B")[0:6])
+            graph_1_keys.append(k.strftime("%d %B"))
             graph_1_values.append(v)
 
         graph_2 = sorted(data_mask.items(), key=lambda x: x[0])
         graph_2_keys = []
         graph_2_values = []
         for k, v in graph_2:
-            graph_2_keys.append(k.strftime("%d %B")[0:6])
+            graph_2_keys.append(k.strftime("%d %B"))
             graph_2_values.append(v)
 
         graph_3 = sorted(data_social_distance.items(), key=lambda x: x[0])
         graph_3_keys = []
         graph_3_values = []
         for k, v in graph_3:
-            graph_3_keys.append(k.strftime("%d %B")[0:6])
+            graph_3_keys.append(k.strftime("%d %B"))
             graph_3_values.append(v)
 
         output['graph_1_key'] = graph_1_keys
@@ -129,14 +124,13 @@ class GraphDetails(Resource):
         output['graph_3_value'] = graph_3_values
         return output
 
-
 class LocationDetails(Resource):
 
     def get(self):
         data = LocationTable.find({})
         print(data)
         locations = dict()
-        geolocator = Nominatim(user_agent='http')
+        geolocator = Nominatim(user_agent = 'https')
         i = 0
         for x in data:
             date = x['datetime']
@@ -145,7 +139,7 @@ class LocationDetails(Resource):
 
             if (datetime.now() - date).days <= 7:
                 location = dict()
-
+                
                 st = str(x['latitude'])+', '+str(x['longitude'])
 
                 location['latitude'] = x['latitude']
@@ -159,43 +153,8 @@ class LocationDetails(Resource):
 
         return locations
 
-
-class Excel(Resource):
-    def get(self):
-        data = LocationTable.find({})
-        print(data)
-        locations = dict()
-        geolocator = Nominatim(user_agent='http')
-        i = 0
-        expense_data = [['Sr.', 'Date', 'Type', 'Location']]
-        for x in data:
-            date = x['datetime']
-            day, month, year = date.day, date.month, date.year
-            date = datetime(year, month, day)
-
-            if (datetime.now() - date).days <= 7:
-                location = dict()
-
-                st = str(x['latitude'])+', '+str(x['longitude'])
-
-                location['latitude'] = x['latitude']
-                location['longitude'] = x['longitude']
-                location['address'] = geolocator.reverse(st).address
-                location['date'] = date.strftime("%d %B, %Y")
-                location['type'] = x['type']
-                locations[i] = location
-                expense_data.append([
-                    i+1, date.strftime("%d %B, %Y"),
-                    x['type'],
-                    geolocator.reverse(st).address,
-                ])
-                i += 1
-
-        return excel.make_response_from_array(expense_data, "csv",
-                                              file_name="Violation CSV")
-
-
 class MaskTest(Resource):
+    
     def post(self):
 
         data = request.get_json()
@@ -203,17 +162,18 @@ class MaskTest(Resource):
         url_response = urllib.request.urlopen(imageUrl)
         img_array = np.array(bytearray(url_response.read()), dtype=np.uint8)
         img = cv2.imdecode(img_array, -1)
-
+        
         (locs, preds) = detect_and_predict_mask(img)
         length_ = len(preds)
         mask_count = 0
         for pred in preds:
             if pred[0] > pred[1]:
-                mask_count += 1
-        print(length_, mask_count)
+                mask_count += 1         
+        print(length_,mask_count)
+
 
         if ((length_ - mask_count) / length_) * 100 > 10:
-
+    
             queryObject = {
                 'latitude': data['latitude'],
                 'longitude': data['longitude'],
@@ -226,14 +186,12 @@ class MaskTest(Resource):
             print(query)
         return {"msg": "Total people not wearing the mask are : {}".format(length_ - mask_count)}
 
-
 api = Api(app)
 api.add_resource(Add, '/insert-one/<string:name>/<int:id>')
 api.add_resource(Validate, '/validate')
 api.add_resource(GraphDetails, '/graph_details')
 api.add_resource(LocationDetails, '/location_details')
 api.add_resource(MaskTest, '/check_face_mask')
-api.add_resource(Excel, '/csv')
 
-if __name__ == '__main__':
-    app.run(debug=True)
+if __name__ == '__main__': 
+    app.run(debug=True) 

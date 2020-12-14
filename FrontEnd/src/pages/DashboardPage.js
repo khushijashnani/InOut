@@ -358,7 +358,8 @@ class DashboardPage extends React.Component {
         entry = {
           'index': i,
           'date': data[key].date,
-          'address': data[key].address
+          'address': data[key].address,
+          'imageURL': data[key].imageURL
         }
         social.push(entry)
       }
@@ -765,7 +766,9 @@ class DashboardPage extends React.Component {
                       {this.state.social_distance && this.state.showMore
                         ? this.state.social_distance.map((expense) => (
                           <tr className="text-truncate" style={{ cursor: 'pointer' }} onClick={() => {
-                            console.log(expense)
+                            window.open(
+                              expense.imageURL
+                            );
                           }} >
                             {/* {expense.type == 'Income' ? (
                               <th scope='row' style={{ color: 'green' }}>
@@ -789,7 +792,9 @@ class DashboardPage extends React.Component {
                         : this.state.social_distance &&
                         this.state.social_distance.slice(0, 5).map((expense) => (
                           <tr className="text-truncate" style={{ cursor: 'pointer' }} onClick={() => {
-                            console.log(expense)
+                            window.open(
+                              expense.imageURL
+                            );
                           }} >
                             {/* {expense.type == 'Income' ? (
                               <th scope='row' style={{ color: 'green' }}>
@@ -896,7 +901,9 @@ class DashboardPage extends React.Component {
                       {this.state.mask_violations && this.state.showMore1
                         ? this.state.mask_violations.map((expense) => (
                           <tr style={{ cursor: 'pointer' }} onClick={() => {
-                            console.log(expense)
+                            window.open(
+                              expense.imageURL
+                            );
                           }}>
 
                             <td>{expense.index}</td>
@@ -912,7 +919,9 @@ class DashboardPage extends React.Component {
                         : this.state.mask_violations &&
                         this.state.mask_violations.slice(0, 5).map((expense) => (
                           <tr style={{ cursor: 'pointer' }} onClick={() => {
-                            console.log(expense)
+                            window.open(
+                              expense.imageURL
+                            );
                           }}>
 
                             <td>{expense.index}</td>
