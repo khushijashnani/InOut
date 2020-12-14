@@ -11,10 +11,8 @@ from mask_model.detect_mask import detect_and_predict_mask
 import flask_excel as excel
 # import imutils
 
-
-connection_url = 'mongodb+srv://<username>:<password>@inout.a9ism.mongodb.net/<dbname>?retryWrites=true&w=majority'
-
-
+# Replace your URL here. Don't forget to replace the password.
+connection_url = 'mongodb+srv://priyavmehta:priyavmehta@inout.a9ism.mongodb.net/inout?retryWrites=true&w=majority'
 
 app = Flask(__name__)
 client = pymongo.MongoClient(connection_url)
@@ -24,56 +22,19 @@ app.config['SECRET_KEY'] = 'assembler'
 Database = client.get_database('inout')
 # Table
 LocationTable = Database.Locations
-UserTable = Database.Users
 
 excel.init_excel(app)
 
 
-class UserRegister(Resource):
+class Add(Resource):
 
-    def post(self):
-
-        data = request.get_json()
-        email = data['email']
-
-        user = UserTable.find_one({'email': email})
-
-        if user :
-            return { "msg" : "This email id already exists" }
-
-        userObject = {
-            'email': email,
-            'password': data['password'],
-            'org_name': data['organisation_name'],
+    def get(self, name, id):
+        queryObject = {
+            'Name': name,
+            'ID': id
         }
-        query = UserTable.insert_one(userObject)
-        return { "msg" : "User registered successfully" }
-
-class UserLogin(Resource):
-    
-    def post(self):
-
-        data = request.get_json()
-        email = data['email']
-        password = data['password']
-
-        user = UserTable.find_one({'email': email})
-
-        if user:
-
-            if password == user['password']:
-
-                userDetails = {
-                    'email': user['email'],
-                    'password': user['password'],
-                    'organisation_name': user['org_name']
-                }
-                
-                return { "msg" : "Login successful", 'user': userDetails }
-
-            return { "msg" : "Invalid Credentials" }
-
-        return { "msg" : "User does not exist...!!!"}
+        query = LocationTable.insert_one(queryObject)
+        return "Query inserted...!!!"
 
 
 class Validate(Resource):
@@ -85,18 +46,15 @@ class Validate(Resource):
         img_array = np.array(bytearray(url_response.read()), dtype=np.uint8)
         img = cv2.imdecode(img_array, -1)
         v = detectSocialDistancing(img)
-        geolocator = Nominatim(user_agent='https')
         print(v)
         if (v[0] / v[1]) * 100 > 30:
-            st = str(data['latitude'])+', '+str(data['longitude'])
 
             queryObject = {
                 'latitude': data['latitude'],
                 'longitude': data['longitude'],
                 'datetime': datetime.now(),
                 'imageURL': data['url'],
-                'type': "Social Distancing Violation",
-                'address': geolocator.reverse(st).address
+                'type': "Social Distancing Violation"
             }
 
             query = LocationTable.insert_one(queryObject)
@@ -178,6 +136,7 @@ class LocationDetails(Resource):
         data = LocationTable.find({})
         print(data)
         locations = dict()
+        geolocator = Nominatim(user_agent='https')
         i = 0
         for x in data:
             date = x['datetime']
@@ -191,7 +150,7 @@ class LocationDetails(Resource):
 
                 location['latitude'] = x['latitude']
                 location['longitude'] = x['longitude']
-                location['address'] = x['address']
+                location['address'] = geolocator.reverse(st).address
                 location['date'] = date.strftime("%d %B, %Y")
                 location['type'] = x['type']
                 location['imageURL'] = x['imageURL']
@@ -206,7 +165,7 @@ class Excel(Resource):
         data = LocationTable.find({})
         print(data)
         locations = dict()
-        # geolocator = Nominatim(user_agent='http')
+        geolocator = Nominatim(user_agent='http')
         i = 0
         expense_data = [['Sr.', 'Date', 'Type', 'Location']]
         for x in data:
@@ -221,14 +180,14 @@ class Excel(Resource):
 
                 location['latitude'] = x['latitude']
                 location['longitude'] = x['longitude']
-                location['address'] = x['address']
+                location['address'] = geolocator.reverse(st).address
                 location['date'] = date.strftime("%d %B, %Y")
                 location['type'] = x['type']
                 locations[i] = location
                 expense_data.append([
                     i+1, date.strftime("%d %B, %Y"),
                     x['type'],
-                    x['address']
+                    geolocator.reverse(st).address,
                 ])
                 i += 1
 
@@ -244,7 +203,7 @@ class MaskTest(Resource):
         url_response = urllib.request.urlopen(imageUrl)
         img_array = np.array(bytearray(url_response.read()), dtype=np.uint8)
         img = cv2.imdecode(img_array, -1)
-        geolocator = Nominatim(user_agent='https')
+
         (locs, preds) = detect_and_predict_mask(img)
         length_ = len(preds)
         mask_count = 0
@@ -254,14 +213,13 @@ class MaskTest(Resource):
         print(length_, mask_count)
 
         if ((length_ - mask_count) / length_) * 100 > 10:
-            st = str(data['latitude'])+', '+str(data['longitude'])
+
             queryObject = {
                 'latitude': data['latitude'],
                 'longitude': data['longitude'],
                 'datetime': datetime.now(),
                 'imageURL': data['url'],
-                'type': "Mask Defaulter",
-                'address': geolocator.reverse(st).address
+                'type': "Mask Defaulter"
             }
 
             query = LocationTable.insert_one(queryObject)
@@ -270,8 +228,7 @@ class MaskTest(Resource):
 
 
 api = Api(app)
-api.add_resource(UserRegister, '/register')
-api.add_resource(UserLogin, '/login')
+api.add_resource(Add, '/insert-one/<string:name>/<int:id>')
 api.add_resource(Validate, '/validate')
 api.add_resource(GraphDetails, '/graph_details')
 api.add_resource(LocationDetails, '/location_details')

@@ -54,7 +54,7 @@ class _GraphDetailsState extends State<GraphDetails> {
   getgraph() async {
     
     var response =
-        await http.get('https://5d4fc775e84b.ngrok.io/graph_details');
+        await http.get('https://cd7ceb0e8542.ngrok.io/graph_details');
     var jsonData = json.decode(response.body);
 
     Map<dynamic, dynamic> data = jsonData;

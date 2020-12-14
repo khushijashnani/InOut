@@ -116,7 +116,7 @@ class _HomeState extends State<Home> {
           });
 
           var response = await http.post(
-              'https://c680f43c9351.ngrok.io/validate',
+              'https://cd7ceb0e8542.ngrok.io/validate',
               headers: headers,
               body: json.encode(data));
           var jsonData = json.decode(response.body);
@@ -127,7 +127,7 @@ class _HomeState extends State<Home> {
             text = message + "\nWaiting to detect mask on faces";
           });
           
-          var response2 = await http.post('https://c680f43c9351.ngrok.io/check_face_mask',headers: headers,
+          var response2 = await http.post('https://cd7ceb0e8542.ngrok.io/check_face_mask',headers: headers,
               body: json.encode(data));
           var jsonData2 = json.decode(response2.body);
           String message2 = jsonData2["msg"];

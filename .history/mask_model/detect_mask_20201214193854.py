@@ -24,8 +24,10 @@ args = vars(ap.parse_args())
 
 
 # load the face mask detector model from disk
-maskNetPath = os.path.join(os.getcwd() + '\\mask_model\\mask_detector.model')
+maskNetPath = os.path.join(os.getcwd() + '\\mask_detector_model')
 print(maskNetPath)
+# maskNet = load_model(
+#     r"/Users/priyavmehta/Desktop/Flask/InOut/mask_model/mask_detector.model")
 maskNet = load_model(maskNetPath)
 
 print(os.getcwd())

@@ -13,8 +13,7 @@ import flask_excel as excel
 
 
 connection_url = 'mongodb+srv://<username>:<password>@inout.a9ism.mongodb.net/<dbname>?retryWrites=true&w=majority'
-
-
+# connection_url = 'mongodb+srv://<priyavmehta>:<priyavmehta>@inout.a9ism.mongodb.net/inout?retryWrites=true&w=majority'
 
 app = Flask(__name__)
 client = pymongo.MongoClient(connection_url)
