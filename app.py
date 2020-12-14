@@ -100,7 +100,6 @@ class GraphDetails(Resource):
                     elif output[key]['type'] == "Mask Defaulter":
                         data_mask[date] = data_mask[date] + 1
                     break
-
         graph_1 = sorted(data.items(), key=lambda x: x[0])
         graph_1_keys = []
         graph_1_values = []

@@ -28,11 +28,8 @@ face_cascade = cv2.CascadeClassifier(
 
 
 def detect_and_predict_mask(frame):
-    # grab the dimensions of the frame and then construct a blob
-    # from it
 
     print(frame.shape)
-
     width = int(frame.shape[1])
     height = int(frame.shape[0])
 
