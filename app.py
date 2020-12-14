@@ -22,19 +22,51 @@ app.config['SECRET_KEY'] = 'assembler'
 Database = client.get_database('inout')
 # Table
 LocationTable = Database.Locations
+UserTable = Database.Users
 
 excel.init_excel(app)
 
 
-class Add(Resource):
+class UserRegister(Resource):
 
-    def get(self, name, id):
-        queryObject = {
-            'Name': name,
-            'ID': id
+    def post(self):
+
+        data = request.get_json()
+        email = data['email']
+
+        user = UserTable.find_one({'email': email})
+        # print(user['email'])
+
+        if user :
+            return { "msg" : "This email id already exists" }
+
+        userObject = {
+            'email': email,
+            'password': data['password'],
+            'org_name': data['organisation_name'],
         }
-        query = LocationTable.insert_one(queryObject)
-        return "Query inserted...!!!"
+        query = UserTable.insert_one(userObject)
+        return { "msg" : "User registered successfully" }
+
+class UserLogin(Resource):
+    
+    def post(self):
+
+        data = request.get_json()
+        email = data['email']
+        password = data['password']
+
+        user = UserTable.find_one({'email': email})
+
+        if user:
+
+            if password == user['password']:
+                
+                return { "msg" : "Login successful" }
+
+            return { "msg" : "Invalid Credentials" }
+
+        return { "msg" : "User does not exist...!!!"}
 
 
 # class Validate(Resource):
@@ -46,15 +78,18 @@ class Add(Resource):
 #         img_array = np.array(bytearray(url_response.read()), dtype=np.uint8)
 #         img = cv2.imdecode(img_array, -1)
 #         v = detectSocialDistancing(img)
+#         geolocator = Nominatim(user_agent='https')
 #         print(v)
 #         if (v[0] / v[1]) * 100 > 30:
+            # st = str(data['latitude'])+', '+str(data['longitude'])
 
 #             queryObject = {
 #                 'latitude': data['latitude'],
 #                 'longitude': data['longitude'],
 #                 'datetime': datetime.now(),
 #                 'imageURL': data['url'],
-#                 'type': "Social Distancing Violation"
+#                 'type': "Social Distancing Violation",
+#                 'address': geolocator.reverse(st).address
 #             }
 
 #             query = LocationTable.insert_one(queryObject)
@@ -204,7 +239,7 @@ class Excel(Resource):
 #         url_response = urllib.request.urlopen(imageUrl)
 #         img_array = np.array(bytearray(url_response.read()), dtype=np.uint8)
 #         img = cv2.imdecode(img_array, -1)
-
+#         geolocator = Nominatim(user_agent='https')
 #         (locs, preds) = detect_and_predict_mask(img)
 #         length_ = len(preds)
 #         mask_count = 0
@@ -214,13 +249,14 @@ class Excel(Resource):
 #         print(length_, mask_count)
 
 #         if ((length_ - mask_count) / length_) * 100 > 10:
-
+#             st = str(data['latitude'])+', '+str(data['longitude'])
 #             queryObject = {
 #                 'latitude': data['latitude'],
 #                 'longitude': data['longitude'],
 #                 'datetime': datetime.now(),
 #                 'imageURL': data['url'],
-#                 'type': "Mask Defaulter"
+#                 'type': "Mask Defaulter",
+#                 'address': geolocator.reverse(st).address
 #             }
 
 #             query = LocationTable.insert_one(queryObject)
@@ -229,7 +265,8 @@ class Excel(Resource):
 
 
 api = Api(app)
-api.add_resource(Add, '/insert-one/<string:name>/<int:id>')
+api.add_resource(UserRegister, '/register')
+api.add_resource(UserLogin, '/login')
 # api.add_resource(Validate, '/validate')
 api.add_resource(GraphDetails, '/graph_details')
 api.add_resource(LocationDetails, '/location_details')
