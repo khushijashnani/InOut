@@ -2,12 +2,12 @@ from flask import Flask, request, jsonify
 import pymongo
 import urllib
 from flask_restful import Resource, Api
-# from model.social_distance_detector import detectSocialDistancing
-# import numpy as np
-# import cv2
+from model.social_distance_detector import detectSocialDistancing
+import numpy as np
+import cv2
 from datetime import datetime
 from geopy.geocoders import Nominatim
-# from mask_model.detect_mask import detect_and_predict_mask
+from mask_model.detect_mask import detect_and_predict_mask
 import flask_excel as excel
 # import imutils
 
@@ -35,7 +35,6 @@ class UserRegister(Resource):
         email = data['email']
 
         user = UserTable.find_one({'email': email})
-        # print(user['email'])
 
         if user :
             return { "msg" : "This email id already exists" }
@@ -75,32 +74,32 @@ class UserLogin(Resource):
         return { "msg" : "User does not exist...!!!"}
 
 
-# class Validate(Resource):
+class Validate(Resource):
 
-#     def post(self):
-#         data = request.get_json()
-#         url = data['url']
-#         url_response = urllib.request.urlopen(url)
-#         img_array = np.array(bytearray(url_response.read()), dtype=np.uint8)
-#         img = cv2.imdecode(img_array, -1)
-#         v = detectSocialDistancing(img)
-#         geolocator = Nominatim(user_agent='https')
-#         print(v)
-#         if (v[0] / v[1]) * 100 > 30:
-            # st = str(data['latitude'])+', '+str(data['longitude'])
+    def post(self):
+        data = request.get_json()
+        url = data['url']
+        url_response = urllib.request.urlopen(url)
+        img_array = np.array(bytearray(url_response.read()), dtype=np.uint8)
+        img = cv2.imdecode(img_array, -1)
+        v = detectSocialDistancing(img)
+        geolocator = Nominatim(user_agent='https')
+        print(v)
+        if (v[0] / v[1]) * 100 > 30:
+            st = str(data['latitude'])+', '+str(data['longitude'])
 
-#             queryObject = {
-#                 'latitude': data['latitude'],
-#                 'longitude': data['longitude'],
-#                 'datetime': datetime.now(),
-#                 'imageURL': data['url'],
-#                 'type': "Social Distancing Violation",
-#                 'address': geolocator.reverse(st).address
-#             }
+            queryObject = {
+                'latitude': data['latitude'],
+                'longitude': data['longitude'],
+                'datetime': datetime.now(),
+                'imageURL': data['url'],
+                'type': "Social Distancing Violation",
+                'address': geolocator.reverse(st).address
+            }
 
-#             query = LocationTable.insert_one(queryObject)
-#             print(query)
-#         return {"msg": "Total people violating social distancing are : {}".format(v[0])}
+            query = LocationTable.insert_one(queryObject)
+            print(query)
+        return {"msg": "Total people violating social distancing are : {}".format(v[0])}
 
 
 class GraphDetails(Resource):
@@ -177,7 +176,6 @@ class LocationDetails(Resource):
         data = LocationTable.find({})
         print(data)
         locations = dict()
-        # geolocator = Nominatim(user_agent='http')
         i = 0
         for x in data:
             date = x['datetime']
@@ -191,7 +189,6 @@ class LocationDetails(Resource):
 
                 location['latitude'] = x['latitude']
                 location['longitude'] = x['longitude']
-                # location['address'] = geolocator.reverse(st).address
                 location['address'] = x['address']
                 location['date'] = date.strftime("%d %B, %Y")
                 location['type'] = x['type']
@@ -237,46 +234,46 @@ class Excel(Resource):
                                               file_name="Violation CSV")
 
 
-# class MaskTest(Resource):
-#     def post(self):
+class MaskTest(Resource):
+    def post(self):
 
-#         data = request.get_json()
-#         imageUrl = data['url']
-#         url_response = urllib.request.urlopen(imageUrl)
-#         img_array = np.array(bytearray(url_response.read()), dtype=np.uint8)
-#         img = cv2.imdecode(img_array, -1)
-#         geolocator = Nominatim(user_agent='https')
-#         (locs, preds) = detect_and_predict_mask(img)
-#         length_ = len(preds)
-#         mask_count = 0
-#         for pred in preds:
-#             if pred[0] > pred[1]:
-#                 mask_count += 1
-#         print(length_, mask_count)
+        data = request.get_json()
+        imageUrl = data['url']
+        url_response = urllib.request.urlopen(imageUrl)
+        img_array = np.array(bytearray(url_response.read()), dtype=np.uint8)
+        img = cv2.imdecode(img_array, -1)
+        geolocator = Nominatim(user_agent='https')
+        (locs, preds) = detect_and_predict_mask(img)
+        length_ = len(preds)
+        mask_count = 0
+        for pred in preds:
+            if pred[0] > pred[1]:
+                mask_count += 1
+        print(length_, mask_count)
 
-#         if ((length_ - mask_count) / length_) * 100 > 10:
-#             st = str(data['latitude'])+', '+str(data['longitude'])
-#             queryObject = {
-#                 'latitude': data['latitude'],
-#                 'longitude': data['longitude'],
-#                 'datetime': datetime.now(),
-#                 'imageURL': data['url'],
-#                 'type': "Mask Defaulter",
-#                 'address': geolocator.reverse(st).address
-#             }
+        if ((length_ - mask_count) / length_) * 100 > 10:
+            st = str(data['latitude'])+', '+str(data['longitude'])
+            queryObject = {
+                'latitude': data['latitude'],
+                'longitude': data['longitude'],
+                'datetime': datetime.now(),
+                'imageURL': data['url'],
+                'type': "Mask Defaulter",
+                'address': geolocator.reverse(st).address
+            }
 
-#             query = LocationTable.insert_one(queryObject)
-#             print(query)
-#         return {"msg": "Total people not wearing the mask are : {}".format(length_ - mask_count)}
+            query = LocationTable.insert_one(queryObject)
+            print(query)
+        return {"msg": "Total people not wearing the mask are : {}".format(length_ - mask_count)}
 
 
 api = Api(app)
 api.add_resource(UserRegister, '/register')
 api.add_resource(UserLogin, '/login')
-# api.add_resource(Validate, '/validate')
+api.add_resource(Validate, '/validate')
 api.add_resource(GraphDetails, '/graph_details')
 api.add_resource(LocationDetails, '/location_details')
-# api.add_resource(MaskTest, '/check_face_mask')
+api.add_resource(MaskTest, '/check_face_mask')
 api.add_resource(Excel, '/csv')
 
 if __name__ == '__main__':
