@@ -61,8 +61,14 @@ class UserLogin(Resource):
         if user:
 
             if password == user['password']:
+
+                userDetails = {
+                    'email': user['email'],
+                    'password': user['password'],
+                    'organisation_name': user['org_name']
+                }
                 
-                return { "msg" : "Login successful" }
+                return { "msg" : "Login successful", 'user': userDetails }
 
             return { "msg" : "Invalid Credentials" }
 
