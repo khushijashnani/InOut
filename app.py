@@ -4,7 +4,7 @@ import urllib
 from flask_restful import Resource, Api
 # from model.social_distance_detector import detectSocialDistancing
 # import numpy as np
-import cv2
+# import cv2
 from datetime import datetime
 from geopy.geocoders import Nominatim
 # from mask_model.detect_mask import detect_and_predict_mask
