@@ -136,7 +136,7 @@ class LocationDetails(Resource):
         data = LocationTable.find({})
         print(data)
         locations = dict()
-        geolocator = Nominatim(user_agent='http')
+        # geolocator = Nominatim(user_agent='http')
         i = 0
         for x in data:
             date = x['datetime']
@@ -150,7 +150,8 @@ class LocationDetails(Resource):
 
                 location['latitude'] = x['latitude']
                 location['longitude'] = x['longitude']
-                location['address'] = geolocator.reverse(st).address
+                # location['address'] = geolocator.reverse(st).address
+                location['address'] = x['address']
                 location['date'] = date.strftime("%d %B, %Y")
                 location['type'] = x['type']
                 location['imageURL'] = x['imageURL']
@@ -165,7 +166,7 @@ class Excel(Resource):
         data = LocationTable.find({})
         print(data)
         locations = dict()
-        geolocator = Nominatim(user_agent='http')
+        # geolocator = Nominatim(user_agent='http')
         i = 0
         expense_data = [['Sr.', 'Date', 'Type', 'Location']]
         for x in data:
@@ -180,14 +181,14 @@ class Excel(Resource):
 
                 location['latitude'] = x['latitude']
                 location['longitude'] = x['longitude']
-                location['address'] = geolocator.reverse(st).address
+                location['address'] = x['address']
                 location['date'] = date.strftime("%d %B, %Y")
                 location['type'] = x['type']
                 locations[i] = location
                 expense_data.append([
                     i+1, date.strftime("%d %B, %Y"),
                     x['type'],
-                    geolocator.reverse(st).address,
+                    x['address']
                 ])
                 i += 1
 
