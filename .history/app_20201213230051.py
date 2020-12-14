@@ -122,6 +122,7 @@ class GraphDetails(Resource):
         output['graph_2_value'] = graph_2_values
         output['graph_3_key'] = graph_3_keys
         output['graph_3_value'] = graph_3_values
+        print(output)
         return output
 
 class LocationDetails(Resource):
@@ -130,7 +131,7 @@ class LocationDetails(Resource):
         data = LocationTable.find({})
         print(data)
         locations = dict()
-        geolocator = Nominatim(user_agent = 'http')
+        geolocator = Nominatim(user_agent = 'https')
         i = 0
         for x in data:
             date = x['datetime']
@@ -147,7 +148,6 @@ class LocationDetails(Resource):
                 location['address'] = geolocator.reverse(st).address
                 location['date'] = date.strftime("%d %B, %Y")
                 location['type'] = x['type']
-                location['imageURL'] = x['imageURL']
                 locations[i] = location
                 i += 1
 

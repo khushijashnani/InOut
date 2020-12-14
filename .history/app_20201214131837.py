@@ -130,7 +130,7 @@ class LocationDetails(Resource):
         data = LocationTable.find({})
         print(data)
         locations = dict()
-        geolocator = Nominatim(user_agent = 'http')
+        geolocator = Nominatim(user_agent = 'https')
         i = 0
         for x in data:
             date = x['datetime']

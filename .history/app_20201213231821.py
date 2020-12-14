@@ -130,7 +130,7 @@ class LocationDetails(Resource):
         data = LocationTable.find({})
         print(data)
         locations = dict()
-        geolocator = Nominatim(user_agent = 'http')
+        geolocator = Nominatim(user_agent = 'https')
         i = 0
         for x in data:
             date = x['datetime']
@@ -147,7 +147,6 @@ class LocationDetails(Resource):
                 location['address'] = geolocator.reverse(st).address
                 location['date'] = date.strftime("%d %B, %Y")
                 location['type'] = x['type']
-                location['imageURL'] = x['imageURL']
                 locations[i] = location
                 i += 1
 
