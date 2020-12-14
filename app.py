@@ -2,16 +2,16 @@ from flask import Flask, request, jsonify
 import pymongo
 import urllib
 from flask_restful import Resource, Api
-from model.social_distance_detector import detectSocialDistancing
-import numpy as np
+# from model.social_distance_detector import detectSocialDistancing
+# import numpy as np
 import cv2
 from datetime import datetime
 from geopy.geocoders import Nominatim
-from mask_model.detect_mask import detect_and_predict_mask
+# from mask_model.detect_mask import detect_and_predict_mask
 import flask_excel as excel
 # import imutils
 
-# Replace your URL here. Don't forget to replace the password.
+
 connection_url = 'mongodb+srv://priyavmehta:priyavmehta@inout.a9ism.mongodb.net/inout?retryWrites=true&w=majority'
 
 app = Flask(__name__)
@@ -37,29 +37,29 @@ class Add(Resource):
         return "Query inserted...!!!"
 
 
-class Validate(Resource):
+# class Validate(Resource):
 
-    def post(self):
-        data = request.get_json()
-        url = data['url']
-        url_response = urllib.request.urlopen(url)
-        img_array = np.array(bytearray(url_response.read()), dtype=np.uint8)
-        img = cv2.imdecode(img_array, -1)
-        v = detectSocialDistancing(img)
-        print(v)
-        if (v[0] / v[1]) * 100 > 30:
+#     def post(self):
+#         data = request.get_json()
+#         url = data['url']
+#         url_response = urllib.request.urlopen(url)
+#         img_array = np.array(bytearray(url_response.read()), dtype=np.uint8)
+#         img = cv2.imdecode(img_array, -1)
+#         v = detectSocialDistancing(img)
+#         print(v)
+#         if (v[0] / v[1]) * 100 > 30:
 
-            queryObject = {
-                'latitude': data['latitude'],
-                'longitude': data['longitude'],
-                'datetime': datetime.now(),
-                'imageURL': data['url'],
-                'type': "Social Distancing Violation"
-            }
+#             queryObject = {
+#                 'latitude': data['latitude'],
+#                 'longitude': data['longitude'],
+#                 'datetime': datetime.now(),
+#                 'imageURL': data['url'],
+#                 'type': "Social Distancing Violation"
+#             }
 
-            query = LocationTable.insert_one(queryObject)
-            print(query)
-        return {"msg": "Total people violating social distancing are : {}".format(v[0])}
+#             query = LocationTable.insert_one(queryObject)
+#             print(query)
+#         return {"msg": "Total people violating social distancing are : {}".format(v[0])}
 
 
 class GraphDetails(Resource):
@@ -195,44 +195,44 @@ class Excel(Resource):
                                               file_name="Violation CSV")
 
 
-class MaskTest(Resource):
-    def post(self):
+# class MaskTest(Resource):
+#     def post(self):
 
-        data = request.get_json()
-        imageUrl = data['url']
-        url_response = urllib.request.urlopen(imageUrl)
-        img_array = np.array(bytearray(url_response.read()), dtype=np.uint8)
-        img = cv2.imdecode(img_array, -1)
+#         data = request.get_json()
+#         imageUrl = data['url']
+#         url_response = urllib.request.urlopen(imageUrl)
+#         img_array = np.array(bytearray(url_response.read()), dtype=np.uint8)
+#         img = cv2.imdecode(img_array, -1)
 
-        (locs, preds) = detect_and_predict_mask(img)
-        length_ = len(preds)
-        mask_count = 0
-        for pred in preds:
-            if pred[0] > pred[1]:
-                mask_count += 1
-        print(length_, mask_count)
+#         (locs, preds) = detect_and_predict_mask(img)
+#         length_ = len(preds)
+#         mask_count = 0
+#         for pred in preds:
+#             if pred[0] > pred[1]:
+#                 mask_count += 1
+#         print(length_, mask_count)
 
-        if ((length_ - mask_count) / length_) * 100 > 10:
+#         if ((length_ - mask_count) / length_) * 100 > 10:
 
-            queryObject = {
-                'latitude': data['latitude'],
-                'longitude': data['longitude'],
-                'datetime': datetime.now(),
-                'imageURL': data['url'],
-                'type': "Mask Defaulter"
-            }
+#             queryObject = {
+#                 'latitude': data['latitude'],
+#                 'longitude': data['longitude'],
+#                 'datetime': datetime.now(),
+#                 'imageURL': data['url'],
+#                 'type': "Mask Defaulter"
+#             }
 
-            query = LocationTable.insert_one(queryObject)
-            print(query)
-        return {"msg": "Total people not wearing the mask are : {}".format(length_ - mask_count)}
+#             query = LocationTable.insert_one(queryObject)
+#             print(query)
+#         return {"msg": "Total people not wearing the mask are : {}".format(length_ - mask_count)}
 
 
 api = Api(app)
 api.add_resource(Add, '/insert-one/<string:name>/<int:id>')
-api.add_resource(Validate, '/validate')
+# api.add_resource(Validate, '/validate')
 api.add_resource(GraphDetails, '/graph_details')
 api.add_resource(LocationDetails, '/location_details')
-api.add_resource(MaskTest, '/check_face_mask')
+# api.add_resource(MaskTest, '/check_face_mask')
 api.add_resource(Excel, '/csv')
 
 if __name__ == '__main__':

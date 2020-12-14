@@ -1,0 +1,10 @@
+Flask
+Flask-RESTful
+uwsgi
+psycopg2
+urllib3
+gunicorn
+geopy
+pymongo
+flask_excel
+dnspython
