@@ -48,61 +48,61 @@ class Login extends React.Component {
     this.setState({ ...this.state, loading: true });
 
     let user = {
-      username: this.state.loginUsername,
+      email: this.state.loginUsername,
       password: this.state.loginPassword,
     };
 
     console.log(user);
-    // const res = await axios
-    //   .post(
-    //     'https://cors-anywhere.herokuapp.com/https://rpk-expense-tracker.herokuapp.com/login',
-    //     user
-    //   )
-    //   .then((response) => {
-    //     console.log(response);
-    //     sessionStorage.removeItem('Authorization');
-    //     sessionStorage.removeItem('userid');
-    //     sessionStorage.setItem(
-    //       'Authorization',
-    //       `Bearer ${response.data.access_token}`
-    //     );
-    //     sessionStorage.setItem('userid', response.data.id);
-    //     setTimeout(() => {
-    //       console.log('Delay');
-    //       this.setState({
-    //         ...this.state,
-    //         token: `Bearer ${response.data.access_token}`,
-    //         loginSuccess: true,
-    //         name: response.data.name,
-    //         id: response.data.id,
-    //       });
-    //     }, 4000);
-    //   })
-    //   .catch((err) => {
-    //     console.log(err);
-    //   });
-    setTimeout(() => {
-      this.setState({
-        ...this.state,
-        name: this.state.loginUsername,
-        loginSuccess: true,
+    const res = await axios
+      .post(
+        'https://aprk-detector.herokuapp.com/login',
+        user
+      )
+      .then((response) => {
+        console.log(response);
+        if (response.data.msg === 'Login successful') {
 
+          console.log('Delay');
+          this.setState({
+            ...this.state,
+            loginSuccess: true,
+            name: response.data.user.organisation_name,
+          });
 
+        }
+        else {
+          this.setState({
+            ...this.state,
+            loginSuccess: false,
+            loading: false
+            // name: response.data.name,
+          });
+        }
+      })
+      .catch((err) => {
+        console.log(err);
       });
-    }, 3500)
+    // setTimeout(() => {
+    //   this.setState({
+    //     ...this.state,
+    //     name: this.state.loginUsername,
+    //     loginSuccess: true,
+
+
+    //   });
+    // }, 3500)
   };
   render() {
     if (this.state.loginSuccess) {
-      console.log(this.state.loginSuccess);
+      // console.log(this.state.name);
 
       return (
         <Redirect
           to={{
             pathname: '/dashboard',
             state: {
-              access_token: this.state.token,
+
               name: this.state.name,
-              id: this.state.id,
             },
           }}
         />
@@ -160,8 +160,8 @@ class Login extends React.Component {
                     </InputGroupText>
                   </InputGroupAddon>
                   <Input
-                    placeholder='Username'
-                    type='text'
+                    placeholder='E-mail'
+                    type='email'
                     autoComplete='new-email'
                     onChange={(e) => {
                       this.setState({
@@ -228,9 +228,9 @@ class Login extends React.Component {
                   className='btn btn-link'
                   onClick={(e) => e.preventDefault()}
                 >
-                  {/* <Link to='/register'>
+                  <Link to='/register'>
                     <small>Create account</small>
-                  </Link> */}
+                  </Link>
                 </button>
               </Col>
             </Row>

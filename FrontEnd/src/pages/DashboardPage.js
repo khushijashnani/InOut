@@ -68,7 +68,7 @@ class DashboardPage extends React.Component {
   names = ['Priyav', 'Harsh', 'Rahul', 'Rishi', 'Vrutik'];
   //   userid = localStorage.getItem('userid');
   //   token = localStorage.getItem('Authorization');
-  // profileName = this.props.location.state.name
+  profileName = this.props.location.state.name
 
   addTransaction = async () => {
     this.setState({ ...this.state, transactionLoader: true });
@@ -330,8 +330,8 @@ class DashboardPage extends React.Component {
   async apiCall() {
 
     axios.all([
-      axios.get('http://127.0.0.1:5000/location_details'),
-      axios.get('http://127.0.0.1:5000/graph_details')
+      axios.get('https://aprk-detector.herokuapp.com/location_details'),
+      axios.get('https://aprk-detector.herokuapp.com/graph_details')
     ])
       .then(responseArr => {
         //this will be executed only when all requests are complete
@@ -415,7 +415,7 @@ class DashboardPage extends React.Component {
       loading: false,
       // data: res.data,
       // expenses: res.data.transactions,
-      // profileName: res.data.name,
+      // profileName: res.name,
       // expenseGraph: res.data.expensedf,
       // incomeGraph: res.data.incomedf,
       chartExample2: {
@@ -566,10 +566,11 @@ class DashboardPage extends React.Component {
   }
   downloadSheet() {
     window.open(
-      'http://127.0.0.1:5000/csv'
+      'https://aprk-detector.herokuapp.com/csv'
     );
   }
   render() {
+    // console.log(this.props.location.state.name)
     if (this.state.loading) {
       // console.log(this.state.loginSuccess)
       return (
@@ -586,7 +587,7 @@ class DashboardPage extends React.Component {
             {...this.props}
             brandText='Dashboard'
             // token={sessionStorage.getItem('Authorization')}
-            name={this.state.profileName}
+            name={this.props.location.state.name}
 
           />
 

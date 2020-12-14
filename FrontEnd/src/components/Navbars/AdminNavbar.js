@@ -82,12 +82,12 @@ class AdminNavbar extends React.Component {
                         src={require('assets/img/theme/team-4-800x800.jpg')}
                       /> */}
                       <span style={{ fontSize: '1.2rem' }}>
-                        <b>R</b>
+                        <b>{this.props.name[0]}</b>
                       </span>
                     </span>
                     <Media className='ml-2 d-none d-lg-block'>
                       <span className='mb-0 text-sm font-weight-bold'>
-                        rishikaul22
+                        {this.props.name}
                       </span>
                     </Media>
                   </Media>

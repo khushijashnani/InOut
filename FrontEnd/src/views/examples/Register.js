@@ -1,19 +1,5 @@
 /*!
 
-=========================================================
-* Argon Dashboard React - v1.1.0
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/argon-dashboard-react
-* Copyright 2019 Creative Tim (https://www.creative-tim.com)
-* Licensed under MIT (https://github.com/creativetimofficial/argon-dashboard-react/blob/master/LICENSE.md)
-
-* Coded by Creative Tim
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
 */
 import React from "react";
 
@@ -48,14 +34,14 @@ class Register extends React.Component {
 
   createUser = async () => {
     let user = {
-      username: this.state.registerUsername,
-      name: this.state.registerName,
+      email: this.state.registerUsername,
+      organisation_name: this.state.registerName,
       password: this.state.registerPassword
     }
 
 
     console.log(user)
-    const res = await axios.post('https://cors-anywhere.herokuapp.com/https://rpk-expense-tracker.herokuapp.com/register', user).then((response) => {
+    const res = await axios.post('https://aprk-detector.herokuapp.com/register', user).then((response) => {
       console.log(response)
       this.setState({ ...this.state, registerSuccess: true })
     }).catch((err) => {
@@ -121,7 +107,7 @@ class Register extends React.Component {
                         <i className="ni ni-single-02" />
                       </InputGroupText>
                     </InputGroupAddon>
-                    <Input placeholder="Name" type="text" onChange={(e) => {
+                    <Input placeholder="Organisation Name" type="text" onChange={(e) => {
                       this.setState({ ...this.state, registerName: e.target.value })
 
                     }} />
@@ -134,7 +120,7 @@ class Register extends React.Component {
                         <i className="ni ni-circle-08" />
                       </InputGroupText>
                     </InputGroupAddon>
-                    <Input placeholder="Username" type="email" autoComplete="new-email" onChange={(e) => {
+                    <Input placeholder="E-mail" type="email" autoComplete="new-email" onChange={(e) => {
                       this.setState({ ...this.state, registerUsername: e.target.value })
 
                     }} />
