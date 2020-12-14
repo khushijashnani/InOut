@@ -24,13 +24,10 @@ args = vars(ap.parse_args())
 
 
 # load the face mask detector model from disk
-maskNetPath = os.path.join(os.getcwd() + '\\mask_model\\mask_detector.model')
-print(maskNetPath)
-maskNet = load_model(maskNetPath)
-
-print(os.getcwd())
-# face_cascade = cv2.CascadeClassifier(
-#     r'/Users/rishikaul/Desktop/InOut/mask_model/haarcascade_frontalface_default.xml')
+maskNet = load_model(
+    r"/Users/rishikaul/Desktop/InOut/mask_model/mask_detector.model")
+face_cascade = cv2.CascadeClassifier(
+    r'/Users/rishikaul/Desktop/InOut/mask_model/haarcascade_frontalface_default.xml')
 
 
 def detect_and_predict_mask(frame):
